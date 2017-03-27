@@ -1,7 +1,7 @@
 import Particle from './Particle';
 import { rotatePoint, asteroidVertices, randomNumBetween } from './helpers';
 
-export default class Bullet {
+export default class Missile {
   constructor(args) {
     let posDelta = rotatePoint({x:0, y:-20}, {x:0,y:0}, args.ship.rotation * Math.PI / 180);
     this.position = {
@@ -43,12 +43,25 @@ export default class Bullet {
 
   render(state){
     // Move
-    var lifetime = 500 - (Date.now() - this.creationTime);
+    var lifetime = 1000 - (Date.now() - this.creationTime);
     if(lifetime < 0){
       this.destroy();
     } else {
-      this.position.x += this.velocity.x * lifetime / 100;
-      this.position.y += this.velocity.y * lifetime / 100;
+      var speed = 15;
+      var target = {
+          x: state.asteroids[0].position.x - this.position.x,
+          y: state.asteroids[0].position.y - this.position.y
+      };
+
+      this.rotation = Math.atan2(target.y, target.x) * 180 / Math.PI;
+
+      var vx = speed * (90 - Math.abs(this.rotation)) / 90;
+      var vy = this.rotation < 0 ? -speed + Math.abs(vx) : speed - Math.abs(vx);
+      
+
+      this.position.x += vx;
+      this.position.y += vy;
+      this.createParticle();
     }
 
     // Screen edges

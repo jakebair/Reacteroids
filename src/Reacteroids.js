@@ -10,7 +10,8 @@ const KEY = {
   A: 65,
   D: 68,
   W: 87,
-  SPACE: 32
+  SPACE: 32,
+  CTRL: 17
 };
 
 export class Reacteroids extends Component {
@@ -29,8 +30,11 @@ export class Reacteroids extends Component {
         up    : 0,
         down  : 0,
         space : 0,
+        alt   : 0
       },
       asteroidCount: 3,
+      asteroids: [],
+      missiles: [],
       currentScore: 0,
       topScore: localStorage['topscore'] || 0,
       inGame: false
@@ -38,6 +42,7 @@ export class Reacteroids extends Component {
     this.ship = [];
     this.asteroids = [];
     this.bullets = [];
+    this.missiles = [];
     this.particles = [];
   }
 
@@ -57,6 +62,7 @@ export class Reacteroids extends Component {
     if(e.keyCode === KEY.RIGHT  || e.keyCode === KEY.D) keys.right = value;
     if(e.keyCode === KEY.UP     || e.keyCode === KEY.W) keys.up    = value;
     if(e.keyCode === KEY.SPACE) keys.space = value;
+    if(e.keyCode === KEY.CTRL) keys.ctrl = value;
     this.setState({
       keys : keys
     });
@@ -102,18 +108,37 @@ export class Reacteroids extends Component {
 
     // Check for colisions
     this.checkCollisionsWith(this.bullets, this.asteroids);
+    this.checkCollisionsWith(this.missiles, this.asteroids);
+    // GOD Mode
     this.checkCollisionsWith(this.ship, this.asteroids);
+
+    if(this.missiles.length > 0){
+      this.orderByProximity(this.missiles[0].position, this.asteroids);
+    }
+    this.setState({ asteroids: this.asteroids, missiles: this.missiles });
+    
 
     // Remove or render
     this.updateObjects(this.particles, 'particles')
     this.updateObjects(this.asteroids, 'asteroids')
     this.updateObjects(this.bullets, 'bullets')
+    this.updateObjects(this.missiles, 'missiles')
     this.updateObjects(this.ship, 'ship')
 
     context.restore();
 
     // Next frame
     requestAnimationFrame(() => {this.update()});
+  }
+
+  orderByProximity(position, items) {
+    function dist(l) {
+      return Math.pow(l.position.x - position.x, 2) + Math.pow(l.position.y - position.y, 2);
+    }
+
+    items.sort(function(l1, l2) {
+      return dist(l1) - dist(l2);
+    });
   }
 
   addScore(points){

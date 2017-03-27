@@ -1,4 +1,5 @@
 import Bullet from './Bullet';
+import Missile from './Missile';
 import Particle from './Particle';
 import { rotatePoint, randomNumBetween } from './helpers';
 
@@ -82,9 +83,14 @@ export default class Ship {
     if(state.keys.right){
       this.rotate('RIGHT');
     }
-    if(state.keys.space && Date.now() - this.lastShot > 300){
+    if(state.keys.space && Date.now() - this.lastShot > 100){
       const bullet = new Bullet({ship: this});
       this.create(bullet, 'bullets');
+      this.lastShot = Date.now();
+    }
+    if(state.keys.ctrl && state.missiles.length == 0){
+      const missile = new Missile({ship: this});
+      this.create(missile, 'missiles');
       this.lastShot = Date.now();
     }
 

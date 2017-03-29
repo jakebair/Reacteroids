@@ -16,6 +16,9 @@ export default class Bullet {
         this.radius = 2;
         this.creationTime = Date.now();
         this.create = args.ship.create;
+        this.range = args.range || 500;
+        this.color = args.color || '#ed1c1f';
+        this.destroyWithParticle = args.destroyWithParticle;
     }
 
     createParticle() {
@@ -31,20 +34,24 @@ export default class Bullet {
                     x: randomNumBetween(-1.5, 1.5),
                     y: randomNumBetween(-1.5, 1.5)
                 },
-                color: '#ed1c1f'
+                color: this.color
             });
             this.create(particle, 'particles');
         }
     }
 
     destroy() {
-        this.createParticle();
+        console.log(this.destroyWithParticle)
+        if (this.destroyWithParticle) {
+            this.createParticle();
+        }
+
         this.delete = true;
     }
 
     render(state) {
         // Move
-        var lifetime = 500 - (Date.now() - this.creationTime);
+        var lifetime = this.range - (Date.now() - this.creationTime);
         if (lifetime < 0) {
             this.destroy();
         } else {
@@ -63,7 +70,7 @@ export default class Bullet {
         context.save();
         context.translate(this.position.x, this.position.y);
         context.rotate(this.rotation * Math.PI / 180);
-        context.fillStyle = '#ed1c1f';
+        context.fillStyle = this.color;
         context.lineWidth = 0, 5;
         context.beginPath();
         context.arc(0, 0, 2, 0, 2 * Math.PI);

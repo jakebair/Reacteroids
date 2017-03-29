@@ -1,3 +1,4 @@
+import Bullet from './Bullet';
 import Particle from './Particle';
 import { randomNumBetween } from './helpers';
 
@@ -9,11 +10,14 @@ export default class TieFighter {
             y: randomNumBetween(-1.5, 1.5)
         }
         this.rotation = 0;
-        this.rotationSpeed = randomNumBetween(-1, 1)
+        this.rotationSpeed = randomNumBetween(-0.5, 0.5)
         this.radius = 15;
         this.score = (80 / this.radius) * 5;
         this.create = args.create;
         this.addScore = args.addScore;
+        this.lastShot = 0;
+        this.lastVolley = 0;
+        this.coolDown = 1000;
     }
 
     destroy() {
@@ -50,6 +54,20 @@ export default class TieFighter {
         }
         if (this.rotation < 0) {
             this.rotation += 360;
+        }
+
+
+
+        if (Date.now() - this.lastVolley < randomNumBetween(3000, 10000)) {
+            if (Date.now() - this.lastVolley < randomNumBetween(500, 1000)) {
+                if (Date.now() - this.lastShot > 50) {
+                    const bullet = new Bullet({ ship: this, range: 200, color: '#61c40b', destroyWithParticle: false });
+                    this.create(bullet, 'bullets');
+                    this.lastShot = Date.now();
+                }
+            }
+        } else {
+            this.lastVolley = Date.now();
         }
 
         // Screen edges

@@ -85,7 +85,7 @@ export default class Ship {
             this.rotate('RIGHT');
         }
         if (state.keys.space && Date.now() - this.lastShot > 100) {
-            const bullet = new Bullet({ ship: this });
+            const bullet = new Bullet({ ship: this, destroyWithParticle: true });
             this.create(bullet, 'bullets');
             this.lastShot = Date.now();
         }

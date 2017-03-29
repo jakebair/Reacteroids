@@ -130,6 +130,7 @@ export class Reacteroids extends Component {
 
         // GOD Mode
         // this.checkCollisionsWith(this.ship, this.asteroids);
+        // this.checkCollisionsWith(this.ship, this.bullets);
 
         var targets = [];
         if (this.missiles.length > 0) {

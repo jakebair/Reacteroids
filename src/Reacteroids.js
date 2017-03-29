@@ -131,10 +131,12 @@ export class Reacteroids extends Component {
         // GOD Mode
         // this.checkCollisionsWith(this.ship, this.asteroids);
 
+        var targets = [];
         if (this.missiles.length > 0) {
-            this.orderByProximity(this.missiles[0].position, this.asteroids);
+            targets = targets.concat(this.asteroids, this.fighters)
+            this.orderByProximity(this.missiles[0].position, targets);
         }
-        this.setState({ asteroids: this.asteroids, fighters: this.fighters, missiles: this.missiles });
+        this.setState({ closest: targets, fighters: this.fighters, missiles: this.missiles });
 
 
         // Remove or render

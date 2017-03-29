@@ -50,8 +50,8 @@ export default class Missile {
         } else {
             var speed = 15;
             var target = {
-                x: state.asteroids[0].position.x - this.position.x,
-                y: state.asteroids[0].position.y - this.position.y
+                x: state.closest[0].position.x - this.position.x,
+                y: state.closest[0].position.y - this.position.y
             };
 
             this.rotation = Math.atan2(target.y, target.x) * 180 / Math.PI;

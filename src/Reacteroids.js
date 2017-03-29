@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Ship from './Ship';
 import Asteroid from './Asteroid';
-import { randomNumBetweenExcluding } from './helpers'
+import TieFigher from './TieFighter';
+import { randomNumBetweenExcluding } from './helpers';
 
 const KEY = {
     LEFT: 37,
@@ -34,6 +35,8 @@ export class Reacteroids extends Component {
             },
             asteroidCount: 3,
             asteroids: [],
+            fighterCount: 3,
+            fighters: [],
             missiles: [],
             currentScore: 0,
             topScore: localStorage['topscore'] || 0,
@@ -41,6 +44,7 @@ export class Reacteroids extends Component {
         }
         this.ship = [];
         this.asteroids = [];
+        this.fighters = [];
         this.bullets = [];
         this.missiles = [];
         this.particles = [];
@@ -106,21 +110,37 @@ export class Reacteroids extends Component {
             this.generateAsteroids(count)
         }
 
+        // Next set of fighters
+        if (!this.fighters.length) {
+            let count = this.state.fighterCount + 1;
+            this.setState({ fighterCount: count });
+            this.generateFighters(count)
+        }
+
         // Check for colisions
         this.checkCollisionsWith(this.bullets, this.asteroids);
         this.checkCollisionsWith(this.missiles, this.asteroids);
+
+        this.checkCollisionsWith(this.bullets, this.fighters);
+        this.checkCollisionsWith(this.missiles, this.fighters);
+
+        // this.checkCollisionsWith(this.asteroids, this.asteroids);
+        // this.checkCollisionsWith(this.fighters, this.fighters);
+        this.checkCollisionsWith(this.asteroids, this.fighters);
+
         // GOD Mode
-        this.checkCollisionsWith(this.ship, this.asteroids);
+        // this.checkCollisionsWith(this.ship, this.asteroids);
 
         if (this.missiles.length > 0) {
             this.orderByProximity(this.missiles[0].position, this.asteroids);
         }
-        this.setState({ asteroids: this.asteroids, missiles: this.missiles });
+        this.setState({ asteroids: this.asteroids, fighters: this.fighters, missiles: this.missiles });
 
 
         // Remove or render
         this.updateObjects(this.particles, 'particles')
         this.updateObjects(this.asteroids, 'asteroids')
+        this.updateObjects(this.fighters, 'fighters')
         this.updateObjects(this.bullets, 'bullets')
         this.updateObjects(this.missiles, 'missiles')
         this.updateObjects(this.ship, 'ship')
@@ -169,6 +189,10 @@ export class Reacteroids extends Component {
         // Make asteroids
         this.asteroids = [];
         this.generateAsteroids(this.state.asteroidCount)
+
+        // Make tie fighters
+        this.fighters = [];
+        this.generateFighters(this.state.fighterCount)
     }
 
     gameOver() {
@@ -199,6 +223,23 @@ export class Reacteroids extends Component {
                 addScore: this.addScore.bind(this)
             });
             this.createObject(asteroid, 'asteroids');
+        }
+    }
+
+    generateFighters(howMany) {
+        let asteroids = [];
+        let ship = this.ship[0];
+        for (let i = 0; i < howMany; i++) {
+            let fighter = new TieFigher({
+                size: 80,
+                position: {
+                    x: randomNumBetweenExcluding(0, this.state.screen.width, ship.position.x - 60, ship.position.x + 60),
+                    y: randomNumBetweenExcluding(0, this.state.screen.height, ship.position.y - 60, ship.position.y + 60)
+                },
+                create: this.createObject.bind(this),
+                addScore: this.addScore.bind(this)
+            });
+            this.createObject(fighter, 'fighters');
         }
     }
 

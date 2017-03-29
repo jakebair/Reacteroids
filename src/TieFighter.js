@@ -6,11 +6,13 @@ export default class TieFighter {
     constructor(args) {
         this.position = args.position
         this.velocity = {
-            x: randomNumBetween(-1.5, 1.5),
-            y: randomNumBetween(-1.5, 1.5)
+            x: 0,
+            y: 0
         }
         this.rotation = 0;
-        this.rotationSpeed = randomNumBetween(-0.5, 0.5)
+        this.rotationSpeed = 6;
+        this.speed = -3.15;
+        this.inertia = 0.99;
         this.radius = 15;
         this.score = (80 / this.radius) * 5;
         this.create = args.create;
@@ -42,13 +44,36 @@ export default class TieFighter {
         }
     }
 
+    rotate(dir) {
+        if (dir == 'LEFT') {
+            this.rotation -= this.rotationSpeed;
+        }
+        if (dir == 'RIGHT') {
+            this.rotation += this.rotationSpeed;
+        }
+    }
+
+    accelerate() {
+        this.velocity.x = Math.sin(-this.rotation * Math.PI / 180) * this.speed;
+        this.velocity.y = Math.cos(-this.rotation * Math.PI / 180) * this.speed;
+    }
+
     render(state) {
+        if (randomNumBetween(1, 100) > 90) {
+            this.rotate('RIGHT');
+        } else if (randomNumBetween(1, 100) > 90) {
+            this.rotate('LEFT');
+        }
+
+        this.accelerate();
+
         // Move
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
+        this.velocity.x *= this.inertia;
+        this.velocity.y *= this.inertia;
 
         // Rotation
-        this.rotation += this.rotationSpeed;
         if (this.rotation >= 360) {
             this.rotation -= 360;
         }

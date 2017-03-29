@@ -41,11 +41,9 @@ export default class Bullet {
     }
 
     destroy() {
-        console.log(this.destroyWithParticle)
         if (this.destroyWithParticle) {
             this.createParticle();
         }
-
         this.delete = true;
     }
 
